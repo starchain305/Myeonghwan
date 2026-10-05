@@ -282,6 +282,39 @@
   .human .tab-btn.active{background:var(--human);border-color:var(--human);color:#fff;}
   .divine .tab-btn.active{background:var(--divine);border-color:var(--divine);color:#fff;}
 
+  /* 스크롤 따라오는 바로가기 버튼 */
+  .quick-nav{
+    position:fixed;
+    right:1.1rem;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:20;
+    display:flex;
+    flex-direction:column;
+    gap:0.5rem;
+  }
+  .quick-nav-btn{
+    font-family:inherit;
+    writing-mode:vertical-rl;
+    font-size:0.76rem;
+    letter-spacing:0.08em;
+    padding:0.7rem 0.4rem;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:rgba(250,246,236,0.85);
+    backdrop-filter:blur(4px);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .quick-nav-btn.human:hover{background:var(--human);border-color:var(--human);color:#fff;}
+  .quick-nav-btn.divine:hover{background:var(--divine);border-color:var(--divine);color:#fff;}
+
+  @media (max-width:720px){
+    .quick-nav{right:0.6rem;gap:0.4rem;}
+    .quick-nav-btn{font-size:0.68rem;padding:0.55rem 0.3rem;}
+  }
+
   /* 세계관 설정 탭: 인간계/환계 섹션 구분 */
   .setting-block{margin-bottom:2.4rem;}
   .setting-block:last-child{margin-bottom:0;}
@@ -352,22 +385,34 @@
 
 <main>
   <div class="tab active" id="tab-setting">
+    <div class="quick-nav">
+      <button class="quick-nav-btn human" type="button" data-jump="setting-human">인간계</button>
+      <button class="quick-nav-btn divine" type="button" data-jump="setting-divine">환계</button>
+    </div>
     <div class="tab-inner">
       <div class="section-head"><p>두 세계를 잇는 약속과 규칙</p></div>
 
-      <div class="setting-block">
+      <div class="setting-block" id="setting-human">
         <h3 class="setting-block-title human serif">인간계</h3>
         <div class="sub-panel">
-          <h4>— 미정 —</h4>
-          <p>아직 정해지지 않은 설정입니다. 추후 채워질 예정이에요.</p>
+          <h4>환계로 가는 법</h4>
+          <p>인간은 원칙적으로 환계에 오를 수 없다. 환계의 존재가 인간계로 내려오는 길은 여럿이지만, 그 반대는 오직 하나뿐이다 — 마법사가 직접 초대하거나, 마법사를 매개로 하는 경우에 한해서만 특별히 선택된 인간이 환계에 발을 들일 수 있다. 그 외의 방법으로 환계에 닿았다는 이야기는 전해지지 않는다.</p>
+        </div>
+        <div class="sub-panel">
+          <h4>인간계의 모습</h4>
+          <p>전통과 현대가 자연스럽게 공존하는 세상. 한옥이 늘어선 거리에서도 사람들은 허공에 홀로그램을 띄워 대화하고 정보를 주고받는다. 겉으로는 익숙한 풍경이지만, 그 기술 안에는 어딘가 설명하기 힘든 신비로운 결이 스며 있다.</p>
         </div>
       </div>
 
-      <div class="setting-block">
+      <div class="setting-block" id="setting-divine">
         <h3 class="setting-block-title divine serif">환계</h3>
         <div class="sub-panel">
-          <h4>인간계로 내려가는 법</h4>
+          <h4>인간계로 가는 법</h4>
           <p>환계의 존재는 원칙적으로 인간계로 내려갈 수 없다. 반드시 마법사가 인간의 형상을 만들어주어야만 왕래가 가능한데, 이는 대부분의 환계 존재가 본래 인간의 모습을 하고 있지 않기 때문이다. 다만 모두가 이 절차를 따르는 것은 아니어서, 간혹 마법사 몰래 마법 약을 훔쳐 인간 세상으로 내려가는 존재들도 있다.</p>
+        </div>
+        <div class="sub-panel">
+          <h4>환계의 모습</h4>
+          <p>인간계와는 완전히 다른 세상. 살아가는 방식은 어딘가 닮아 있을지 몰라도, 풍경은 동화 속 왕국처럼 신비롭고 비현실적이다. 그 위에 현대적인 결이 은은하게 겹쳐 있어, 낯설면서도 묘하게 친숙한 인상을 준다.</p>
         </div>
       </div>
     </div>
@@ -429,18 +474,30 @@
                 <div class="world-label">WORLD 02</div>
                 <h3 class="serif">환계</h3>
               </div>
-              <p class="panel-desc">여러 구역으로 나뉜 또 하나의 세계. 그 중심에는 대대로 이어지는 마법사가 있다.</p>
+              <p class="panel-desc">중심에서 바깥으로 둥글게 퍼지는 다섯 개의 단으로 이루어진 세계. 그 위, 단들과는 별개로 마법사의 탑이 떠 있다.</p>
 
               <div class="sub-panel">
-                <h4>구역 1</h4>
+                <h4>마법사의 탑</h4>
+                <p>5단 구조와는 별개로, 그 위 어딘가에 홀로 떠 있는 독립된 공간. 대대로 이어지는 마법사가 머무는 곳이자, 환계의 상징과도 같은 자리다.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>1단</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
               <div class="sub-panel">
-                <h4>구역 2</h4>
+                <h4>2단</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
               <div class="sub-panel">
-                <h4>구역 3</h4>
+                <h4>3단</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>4단</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>5단</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
             </div>
@@ -499,6 +556,16 @@
       tabs.forEach(t => t.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // 바로가기 버튼: 해당 섹션 시작 부분으로 스크롤
+  document.querySelectorAll('.quick-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.jump);
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }
     });
   });
 
