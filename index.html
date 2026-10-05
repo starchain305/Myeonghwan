@@ -318,20 +318,33 @@
     .quick-nav-btn{font-size:0.68rem;padding:0.55rem 0.3rem;}
   }
 
-  /* 숨은 별 (구역 지도 패널 맨 아래) */
-  .hidden-star{
+  /* 마법사의 영역으로 가는 초승달 버튼 (구역 지도 패널 맨 아래) */
+  @keyframes moonGlow{
+    0%, 100%{
+      opacity:0.75;
+      text-shadow:0 0 6px rgba(122,95,143,0.35);
+    }
+    50%{
+      opacity:1;
+      text-shadow:0 0 16px rgba(122,95,143,0.65), 0 0 28px rgba(122,95,143,0.3);
+    }
+  }
+  .moon-trigger{
     display:block;
-    margin:1.6rem auto 0;
+    margin:1.8rem auto 0;
     background:none;
     border:none;
-    font-size:0.85rem;
-    color:var(--ink-soft);
-    opacity:0.22;
+    font-size:1.7rem;
+    color:#7a5f8f;
     cursor:pointer;
-    transition:opacity .3s ease, transform .3s ease;
+    transition:transform .3s ease;
     padding:0.5rem;
+    animation:moonGlow 3.2s ease-in-out infinite;
   }
-  .hidden-star:hover{opacity:0.7;transform:scale(1.15);}
+  .moon-trigger:hover{transform:scale(1.18);}
+  @media (prefers-reduced-motion:reduce){
+    .moon-trigger{animation:none;opacity:0.9;}
+  }
 
   /* 마법사의 영역: 게이트 전체를 덮는 오버레이 */
   .wizard-panel{
@@ -349,6 +362,74 @@
   .wizard-panel .panel-inner{width:100%;max-width:600px;margin:0 auto;}
   .wizard-panel .panel-title h3{color:#7a5f8f;}
   .wizard-panel .panel-top{justify-content:flex-start;}
+
+  /* ===== 캐릭터 탭: 카드형 ===== */
+  .char-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+    gap:1.1rem;
+  }
+  .char-card{
+    position:relative;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:1.6rem 1.3rem;
+    cursor:pointer;
+    overflow:hidden;
+    min-height:180px;
+  }
+  .char-card.human{background:linear-gradient(160deg, var(--human-soft), var(--bg) 85%);}
+  .char-card.divine{background:linear-gradient(160deg, var(--divine-soft), var(--bg) 85%);}
+
+  .char-world-tag{
+    display:inline-block;
+    font-size:0.7rem;
+    letter-spacing:0.05em;
+    padding:0.15rem 0.55rem;
+    border-radius:12px;
+    margin-bottom:0.6rem;
+    color:#fff;
+  }
+  .char-card.human .char-world-tag{background:var(--human);}
+  .char-card.divine .char-world-tag{background:var(--divine);}
+
+  .char-card h4{margin:0 0 0.4rem;font-size:1.15rem;font-weight:600;color:var(--ink);}
+  .char-oneline{margin:0;font-size:0.85rem;color:var(--ink-soft);}
+  .char-hint{
+    position:absolute;
+    bottom:0.9rem;
+    left:1.3rem;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    opacity:0.55;
+  }
+
+  .char-card-detail{display:none;}
+  .char-card.open .char-card-face{display:none;}
+  .char-card.open .char-card-detail{display:block;}
+  .char-card.open{cursor:default;min-height:0;}
+
+  .char-card-detail dl{
+    margin:0 0 1rem;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    column-gap:0.8rem;
+    row-gap:0.4rem;
+    font-size:0.85rem;
+  }
+  .char-card-detail dt{color:var(--ink-soft);}
+  .char-card-detail dd{margin:0;color:var(--ink);font-weight:500;}
+  .char-oneline-detail{
+    margin:0;
+    font-size:0.88rem;
+    color:var(--ink);
+    padding-top:0.8rem;
+    border-top:1px solid var(--line);
+  }
+
+  @media (max-width:720px){
+    .char-grid{grid-template-columns:1fr 1fr;}
+  }
 
   /* 세계관 설정 탭: 인간계/환계 섹션 구분 */
   .setting-block{margin-bottom:2.4rem;}
@@ -415,6 +496,7 @@
     <button class="cat-btn active" data-tab="setting">세계관 설정</button>
     <button class="cat-btn" data-tab="worlds">구역 지도</button>
     <button class="cat-btn" data-tab="lineage">마법사 계보</button>
+    <button class="cat-btn" data-tab="characters">캐릭터</button>
   </div>
 </header>
 
@@ -480,19 +562,27 @@
                 <p>숲 깊은 곳, 눈에 잘 띄지 않는 자리에 조용히 자리한 오두막. 마법사가 인간계에서 지내는 동안 머무는 집으로, 환계의 탑과 마찬가지로 그 안에는 또 다른 공간으로 이어지는 통로가 숨어 있다.</p>
               </div>
               <div class="sub-panel">
-                <h4>구역 1</h4>
+                <h4>수도권 (이름 미정)</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
               <div class="sub-panel">
-                <h4>구역 2</h4>
+                <h4>부촌 (이름 미정)</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
               <div class="sub-panel">
-                <h4>구역 3</h4>
+                <h4>빈민촌 (이름 미정)</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>도시 A (이름 미정)</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>도시 B (이름 미정)</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
 
-              <button class="hidden-star" type="button" data-open-wizard title="">☾</button>
+              <button class="moon-trigger" type="button" data-open-wizard title="마법사의 영역">☾</button>
             </div>
           </div>
         </div>
@@ -542,7 +632,7 @@
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
 
-              <button class="hidden-star" type="button" data-open-wizard title="">☾</button>
+              <button class="moon-trigger" type="button" data-open-wizard title="마법사의 영역">☾</button>
             </div>
           </div>
         </div>
@@ -597,6 +687,48 @@
           <div class="t-gen">6대 · 현재</div>
           <h4>— 미정 —</h4>
           <p>현 마법사. 제자를 두어 다음 대를 준비한다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab" id="tab-characters">
+    <div class="tab-inner">
+      <div class="section-head"><p>두 세계를 오가는 이들</p></div>
+
+      <div class="char-grid">
+        <div class="char-card divine" data-char="siarua">
+          <div class="char-card-face">
+            <div class="char-world-tag">환계</div>
+            <h4 class="serif">시아루아</h4>
+            <p class="char-oneline">환계의 전사</p>
+            <div class="char-hint">누르면 펼쳐져요</div>
+          </div>
+          <div class="char-card-detail">
+            <dl>
+              <dt>세계</dt><dd>환계</dd>
+              <dt>겉보기 성별</dt><dd>여성체</dd>
+              <dt>수련 기간</dt><dd>830년</dd>
+            </dl>
+            <p class="char-oneline-detail">환계의 전사</p>
+          </div>
+        </div>
+
+        <div class="char-card divine" data-char="yanbi">
+          <div class="char-card-face">
+            <div class="char-world-tag">환계</div>
+            <h4 class="serif">얀비</h4>
+            <p class="char-oneline">— 미정 —</p>
+            <div class="char-hint">누르면 펼쳐져요</div>
+          </div>
+          <div class="char-card-detail">
+            <dl>
+              <dt>세계</dt><dd>환계</dd>
+              <dt>겉보기 성별</dt><dd>여성체</dd>
+              <dt>수련 기간</dt><dd>525년</dd>
+            </dl>
+            <p class="char-oneline-detail">— 미정 —</p>
+          </div>
         </div>
       </div>
     </div>
@@ -656,6 +788,13 @@
         s.classList.toggle('chosen-side', s.dataset.world === target);
       });
       gate.classList.add('chosen');
+    });
+  });
+
+  // 캐릭터 카드: 누르면 상세 펼쳐짐
+  document.querySelectorAll('.char-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('open');
     });
   });
 
