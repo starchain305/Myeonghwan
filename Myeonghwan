@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>명환</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Noto+Serif+KR:wght@400;500;700&family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF6EC;
+    --bg-soft:#F3EDDD;
+    --ink:#2E2A24;
+    --ink-soft:#6b6253;
+    --human:#C97B5A;
+    --human-soft:#f0ddd2;
+    --divine:#6B8F7A;
+    --divine-soft:#dce8df;
+    --line:#D9CEB8;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Pretendard','Noto Serif KR',sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .serif{font-family:'Noto Serif KR',serif;}
+  .display{font-family:'Playfair Display','Noto Serif KR',serif;}
+  body{
+    background-image:
+      radial-gradient(1px 1px at 20% 15%, rgba(46,42,36,0.08) 1px, transparent 0),
+      radial-gradient(1px 1px at 65% 45%, rgba(46,42,36,0.06) 1px, transparent 0),
+      radial-gradient(1.5px 1.5px at 85% 20%, rgba(46,42,36,0.07) 1px, transparent 0),
+      radial-gradient(1px 1px at 40% 70%, rgba(46,42,36,0.06) 1px, transparent 0),
+      radial-gradient(1.5px 1.5px at 10% 85%, rgba(46,42,36,0.08) 1px, transparent 0),
+      radial-gradient(1px 1px at 92% 75%, rgba(46,42,36,0.06) 1px, transparent 0);
+    background-repeat:no-repeat;
+    background-size:100% 100%;
+  }
+
+  /* ===== 상단: 제목 + 카테고리 (고정) ===== */
+  header{
+    flex-shrink:0;
+    text-align:center;
+    padding:2.4rem 1.5rem 1.4rem;
+    border-bottom:1px solid var(--line);
+  }
+  header .eyebrow-mark{font-size:1.3rem;opacity:0.6;margin-bottom:0.3rem;}
+  header h1{
+    font-size:clamp(1.7rem, 4vw, 2.3rem);
+    font-weight:600;
+    margin:0 0 1.1rem;
+    letter-spacing:-0.01em;
+  }
+  .cat-bar{
+    display:flex;
+    justify-content:center;
+    gap:2rem;
+  }
+  .cat-btn{
+    font-family:inherit;
+    background:none;
+    border:none;
+    font-size:0.92rem;
+    color:var(--ink-soft);
+    cursor:pointer;
+    padding:0.25rem 0.1rem;
+    position:relative;
+    letter-spacing:0.02em;
+  }
+  .cat-btn::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:-3px;
+    height:1px;
+    background:var(--ink);
+    transform:scaleX(0);
+    transition:transform .25s ease;
+  }
+  .cat-btn.active{color:var(--ink);font-weight:500;}
+  .cat-btn.active::after{transform:scaleX(1);}
+
+  /* ===== 하단: 탭 콘텐츠 영역 ===== */
+  main{
+    flex:1;
+    min-height:0;
+    position:relative;
+  }
+  .tab{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s ease;
+    overflow-y:auto;
+  }
+  .tab.active{opacity:1;pointer-events:auto;}
+  .tab-inner{
+    max-width:760px;
+    margin:0 auto;
+    padding:2rem 1.5rem 3rem;
+    min-height:100%;
+  }
+
+  /* 세계관 탭만은 안쪽 여백 없이 꽉 채움 */
+  #tab-worlds{overflow-y:hidden;}
+  #tab-worlds .tab-inner{
+    max-width:none;
+    padding:0;
+    height:100%;
+  }
+
+  .section-head{text-align:center;margin-bottom:1.8rem;}
+  .section-head p{color:var(--ink-soft);font-size:0.9rem;margin:0;}
+
+  /* ===== 세계관 설정: 좌우 분할 선택형, 화면 전체를 채움 ===== */
+  .gate{
+    position:relative;
+    display:flex;
+    align-items:stretch;
+    height:100%;
+    overflow:hidden;
+  }
+  .gate-side{
+    position:relative;
+    flex:1;
+    cursor:pointer;
+    transition:flex 0.5s cubic-bezier(.65,0,.35,1), width 0.5s cubic-bezier(.65,0,.35,1);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  .gate-side.human{background:linear-gradient(135deg, var(--human-soft), var(--bg) 75%);}
+  .gate-side.divine{background:linear-gradient(135deg, var(--bg) 25%, var(--divine-soft));}
+
+  /* 대기 상태 라벨 (중앙 정렬) */
+  .gate-label{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transition:opacity 0.3s ease;
+  }
+  .gate-label .world-label{font-size:0.78rem;letter-spacing:0.08em;color:var(--ink-soft);margin-bottom:0.3rem;}
+  .gate-label h3{font-size:clamp(1.5rem,3.6vw,2.2rem);margin:0;font-weight:600;}
+  .gate-side.human .gate-label h3{color:#9c5436;}
+  .gate-side.divine .gate-label h3{color:#466857;}
+  .gate-label .gate-hint{margin-top:0.5rem;font-size:0.82rem;color:var(--ink-soft);opacity:0.75;}
+
+  .gate-divider{width:1px;background:var(--line);flex-shrink:0;transition:opacity .3s ease;}
+
+  /* 선택 상태: 반대쪽은 완전히 사라짐(너비 0) */
+  .gate.chosen .gate-side{flex:0 0 0;width:0;padding:0;border:none;}
+  .gate.chosen .gate-side.chosen-side{flex:1 1 auto;width:auto;cursor:default;}
+  .gate.chosen .gate-divider{opacity:0;}
+
+  .gate.chosen .gate-side .gate-label{display:none;}
+
+  /* 펼쳐진 패널: 화면을 꽉 채우고, 내부 스크롤만 세로로 */
+  .gate-panel{
+    display:none;
+    flex-direction:column;
+    height:100%;
+    padding:2.6rem 2.2rem 3rem;
+    overflow-y:auto;
+  }
+  .gate.chosen .gate-side.chosen-side .gate-panel{
+    display:flex;
+  }
+
+  .gate-panel .panel-inner{width:100%;max-width:600px;margin:0 auto;flex:1;}
+
+  .panel-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:1.6rem;
+  }
+
+  .gate-back{
+    background:none;border:1px solid var(--line);border-radius:3px;
+    font-family:inherit;font-size:0.76rem;color:var(--ink-soft);
+    padding:0.32rem 0.65rem;cursor:pointer;
+  }
+  .gate-back:hover{color:var(--ink);}
+
+  /* 반대 세계로 넘어가는 화살표 */
+  .gate-switch{
+    background:none;
+    border:1px solid var(--line);
+    border-radius:50%;
+    width:2.1rem;height:2.1rem;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .gate-switch:hover{color:#fff;}
+  .chosen-side.human .gate-switch:hover{background:var(--divine);border-color:var(--divine);}
+  .chosen-side.divine .gate-switch:hover{background:var(--human);border-color:var(--human);}
+
+  .panel-title{
+    text-align:center;
+    margin-bottom:1.6rem;
+  }
+  .panel-title .world-label{font-size:0.76rem;letter-spacing:0.08em;color:var(--ink-soft);margin-bottom:0.3rem;}
+  .panel-title h3{font-size:clamp(1.4rem,3vw,1.8rem);margin:0 0 0.6rem;font-weight:600;}
+  .chosen-side.human .panel-title h3{color:#9c5436;}
+  .chosen-side.divine .panel-title h3{color:#466857;}
+
+  .panel-desc{font-size:0.9rem;color:var(--ink);margin:0 0 1.6rem;text-align:center;}
+
+  .tab-bar2{display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;margin-bottom:1rem;}
+  .tab-btn{
+    font-family:inherit;font-size:0.78rem;padding:0.36rem 0.75rem;border-radius:20px;
+    border:1px solid var(--line);background:rgba(255,255,255,0.5);color:var(--ink-soft);cursor:pointer;
+    transition:all .2s ease;
+  }
+  .human .tab-btn.active{background:var(--human);border-color:var(--human);color:#fff;}
+  .divine .tab-btn.active{background:var(--divine);border-color:var(--divine);color:#fff;}
+
+  /* 서브 패널: 탭 전환이 아니라 아코디언처럼 쭉 펼쳐지는 형태 */
+  .sub-panel{
+    font-size:0.9rem;color:var(--ink-soft);
+    background:rgba(255,255,255,0.5);border:1px solid var(--line);border-radius:5px;
+    padding:1.3rem 1.4rem;text-align:left;
+    margin-bottom:0.9rem;
+  }
+  .sub-panel h4{margin:0 0 0.5rem;font-size:1.02rem;color:var(--ink);font-weight:600;}
+
+  /* ===== 마법사 계보 ===== */
+  .timeline{position:relative;max-width:480px;margin:0 auto;padding-left:2rem;}
+  .timeline::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:var(--line);}
+  .t-item{position:relative;padding-bottom:2.2rem;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{
+    content:"";position:absolute;left:-2rem;top:4px;width:9px;height:9px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--divine);
+  }
+  .t-item .t-gen{font-size:0.75rem;color:var(--ink-soft);margin-bottom:0.2rem;}
+  .t-item h4{margin:0 0 0.4rem;font-size:1.02rem;font-weight:600;}
+  .t-item p{margin:0;font-size:0.85rem;color:var(--ink-soft);}
+  .t-item.placeholder{opacity:0.55;}
+  .t-item.placeholder h4{font-style:italic;font-weight:500;}
+
+  @media (max-width:720px){
+    header{padding:1.8rem 1rem 1.1rem;}
+    .cat-bar{gap:1.3rem;}
+    .gate-panel{padding:1.8rem 1.2rem 2.2rem;}
+    .panel-desc{margin-bottom:1.2rem;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow-mark">✦</div>
+  <h1 class="display">명환</h1>
+  <div class="cat-bar">
+    <button class="cat-btn active" data-tab="worlds">세계관 설정</button>
+    <button class="cat-btn" data-tab="lineage">마법사 계보</button>
+  </div>
+</header>
+
+<main>
+  <div class="tab active" id="tab-worlds">
+    <div class="tab-inner">
+      <div class="section-head"><p>어느 쪽을 먼저 들여다볼까</p></div>
+
+      <div class="gate" id="gate">
+        <div class="gate-side human" data-world="human">
+          <div class="gate-label">
+            <div class="world-label">WORLD 01</div>
+            <h3 class="serif">인간계</h3>
+            <p class="gate-hint">누르면 펼쳐져요</p>
+          </div>
+          <div class="gate-panel">
+            <div class="panel-inner">
+              <div class="panel-top">
+                <button class="gate-back" type="button" data-close>닫기 ✕</button>
+                <button class="gate-switch" type="button" data-switch-to="divine" title="환계로 이동">→</button>
+              </div>
+              <div class="panel-title">
+                <div class="world-label">WORLD 01</div>
+                <h3 class="serif">인간계</h3>
+              </div>
+              <p class="panel-desc">우리가 아는 세상 그대로. 다만 이곳의 사람들은 환계의 존재를 당연하게 알고 있다.</p>
+              <div class="sub-panel">
+                <h4>구역 1</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>구역 2</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>구역 3</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gate-divider"></div>
+
+        <div class="gate-side divine" data-world="divine">
+          <div class="gate-label">
+            <div class="world-label">WORLD 02</div>
+            <h3 class="serif">환계</h3>
+            <p class="gate-hint">누르면 펼쳐져요</p>
+          </div>
+          <div class="gate-panel">
+            <div class="panel-inner">
+              <div class="panel-top">
+                <button class="gate-switch" type="button" data-switch-to="human" title="인간계로 이동">←</button>
+                <button class="gate-back" type="button" data-close>닫기 ✕</button>
+              </div>
+              <div class="panel-title">
+                <div class="world-label">WORLD 02</div>
+                <h3 class="serif">환계</h3>
+              </div>
+              <p class="panel-desc">여러 구역으로 나뉜 또 하나의 세계. 그 중심에는 대대로 이어지는 마법사가 있다.</p>
+
+              <div class="sub-panel">
+                <h4>인간계로 내려가는 법</h4>
+                <p>환계의 존재는 원칙적으로 인간계로 내려갈 수 없다. 반드시 마법사가 인간의 형상을 만들어주어야만 왕래가 가능한데, 이는 대부분의 환계 존재가 본래 인간의 모습을 하고 있지 않기 때문이다. 다만 모두가 이 절차를 따르는 것은 아니어서, 간혹 마법사 몰래 마법 약을 훔쳐 인간 세상으로 내려가는 존재들도 있다.</p>
+              </div>
+
+              <div class="sub-panel">
+                <h4>구역 1</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>구역 2</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+              <div class="sub-panel">
+                <h4>구역 3</h4>
+                <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab" id="tab-lineage">
+    <div class="tab-inner">
+      <div class="section-head"><p>환계의 중심은 늘 하나의 자리로 이어진다</p></div>
+      <div class="timeline">
+        <div class="t-item placeholder">
+          <div class="t-gen">1대</div>
+          <h4>— 미정 —</h4>
+          <p>환계 최초의 마법사. 설정 예정.</p>
+        </div>
+        <div class="t-item placeholder">
+          <div class="t-gen">…</div>
+          <h4>— 미정 —</h4>
+          <p>계보 중간 세대. 설정 예정.</p>
+        </div>
+        <div class="t-item placeholder">
+          <div class="t-gen">현재</div>
+          <h4>— 미정 —</h4>
+          <p>현 마법사. 제자를 두어 다음 대를 준비한다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // 카테고리 탭 전환
+  const catBtns = document.querySelectorAll('.cat-btn');
+  const tabs = document.querySelectorAll('.tab');
+  catBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      catBtns.forEach(b => b.classList.remove('active'));
+      tabs.forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // 세계관 게이트 (좌/우 선택형, 책등 접힘)
+  const gate = document.getElementById('gate');
+  const gateSides = gate.querySelectorAll('.gate-side');
+
+  gateSides.forEach(side => {
+    side.addEventListener('click', (e) => {
+      if(e.target.closest('[data-close]')) return;
+      // 이미 펼쳐진 상태에서 접힌 쪽(책등)을 누르면 그 쪽으로 전환
+      gateSides.forEach(s => s.classList.remove('chosen-side'));
+      side.classList.add('chosen-side');
+      gate.classList.add('chosen');
+    });
+  });
+
+  gate.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      gate.classList.remove('chosen');
+      gateSides.forEach(s => s.classList.remove('chosen-side'));
+    });
+  });
+
+  gate.querySelectorAll('[data-switch-to]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const target = btn.dataset.switchTo;
+      gateSides.forEach(s => {
+        s.classList.toggle('chosen-side', s.dataset.world === target);
+      });
+      gate.classList.add('chosen');
+    });
+  });
+</script>
+
+</body>
+</html>
