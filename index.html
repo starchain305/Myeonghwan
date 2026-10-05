@@ -162,13 +162,16 @@
     min-height:100%;
   }
 
-  /* 세계관 탭만은 안쪽 여백 없이 꽉 채움 */
+  /* 세계관 탭만은 안쪽 여백 없이 꽉 채움(위쪽만 다른 탭과 톤 맞춰 여유를 둠) */
   #tab-worlds{overflow-y:hidden;}
   #tab-worlds .tab-inner{
     max-width:none;
-    padding:0;
+    padding:2rem 0 0;
     height:100%;
+    display:flex;
+    flex-direction:column;
   }
+  #tab-worlds .gate{flex:1;}
 
   .section-head{text-align:center;margin-bottom:1.8rem;}
   .section-head p{color:var(--ink-soft);font-size:0.9rem;margin:0;}
@@ -315,6 +318,38 @@
     .quick-nav-btn{font-size:0.68rem;padding:0.55rem 0.3rem;}
   }
 
+  /* 숨은 별 (구역 지도 패널 맨 아래) */
+  .hidden-star{
+    display:block;
+    margin:1.6rem auto 0;
+    background:none;
+    border:none;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    opacity:0.22;
+    cursor:pointer;
+    transition:opacity .3s ease, transform .3s ease;
+    padding:0.5rem;
+  }
+  .hidden-star:hover{opacity:0.7;transform:scale(1.15);}
+
+  /* 마법사의 영역: 게이트 전체를 덮는 오버레이 */
+  .wizard-panel{
+    position:absolute;
+    inset:0;
+    z-index:5;
+    display:none;
+    flex-direction:column;
+    height:100%;
+    padding:2.6rem 2.2rem 3rem;
+    overflow-y:auto;
+    background:linear-gradient(160deg, #efe6f2, var(--bg) 78%);
+  }
+  .wizard-panel.open{display:flex;}
+  .wizard-panel .panel-inner{width:100%;max-width:600px;margin:0 auto;}
+  .wizard-panel .panel-title h3{color:#7a5f8f;}
+  .wizard-panel .panel-top{justify-content:flex-start;}
+
   /* 세계관 설정 탭: 인간계/환계 섹션 구분 */
   .setting-block{margin-bottom:2.4rem;}
   .setting-block:last-child{margin-bottom:0;}
@@ -441,6 +476,10 @@
               </div>
               <p class="panel-desc">우리가 아는 세상 그대로. 다만 이곳의 사람들은 환계의 존재를 당연하게 알고 있다.</p>
               <div class="sub-panel">
+                <h4>마법사의 오두막</h4>
+                <p>숲 깊은 곳, 눈에 잘 띄지 않는 자리에 조용히 자리한 오두막. 마법사가 인간계에서 지내는 동안 머무는 집으로, 환계의 탑과 마찬가지로 그 안에는 또 다른 공간으로 이어지는 통로가 숨어 있다.</p>
+              </div>
+              <div class="sub-panel">
                 <h4>구역 1</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
@@ -452,6 +491,8 @@
                 <h4>구역 3</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
+
+              <button class="hidden-star" type="button" data-open-wizard title="">☾</button>
             </div>
           </div>
         </div>
@@ -478,7 +519,7 @@
 
               <div class="sub-panel">
                 <h4>마법사의 탑</h4>
-                <p>5단 구조와는 별개로, 그 위 어딘가에 홀로 떠 있는 독립된 공간. 대대로 이어지는 마법사가 머무는 곳이자, 환계의 상징과도 같은 자리다.</p>
+                <p>5단 구조와는 별개로, 그 위 어딘가에 홀로 떠 있는 탑. 마법사가 환계에서 지내는 동안 머무는 집으로, 그 안에는 또 다른 공간으로 이어지는 통로가 숨어 있다.</p>
               </div>
               <div class="sub-panel">
                 <h4>1단</h4>
@@ -500,7 +541,23 @@
                 <h4>5단</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
+
+              <button class="hidden-star" type="button" data-open-wizard title="">☾</button>
             </div>
+          </div>
+        </div>
+
+        <div class="wizard-panel" id="wizard-panel">
+          <div class="panel-inner">
+            <div class="panel-top">
+              <button class="gate-back" type="button" data-close-wizard>닫기 ✕</button>
+              <span></span>
+            </div>
+            <div class="panel-title">
+              <div class="world-label">BETWEEN</div>
+              <h3 class="serif">마법사의 영역</h3>
+            </div>
+            <p class="panel-desc">인간계도 환계도 아닌, 그 사이 어딘가에 홀로 떠 있는 공간. 환계의 마법사의 탑과 인간계의 마법사의 오두막, 그 안에 숨은 통로를 지나야만 닿을 수 있다. 제자 역시 인간계와 환계 어느 쪽에서 왔든, 결국 이 공간에서 마법사를 만난다.</p>
           </div>
         </div>
       </div>
@@ -599,6 +656,21 @@
         s.classList.toggle('chosen-side', s.dataset.world === target);
       });
       gate.classList.add('chosen');
+    });
+  });
+
+  // 마법사의 영역: 숨은 별을 누르면 게이트 전체를 덮으며 펼쳐짐
+  const wizardPanel = document.getElementById('wizard-panel');
+  gate.querySelectorAll('[data-open-wizard]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      wizardPanel.classList.add('open');
+    });
+  });
+  wizardPanel.querySelectorAll('[data-close-wizard]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      wizardPanel.classList.remove('open');
     });
   });
 </script>
