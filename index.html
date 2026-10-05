@@ -46,14 +46,65 @@
     background-size:100% 100%;
   }
 
+  /* 떠다니는 작은 별 장식 (배경 위에 겹쳐짐) */
+  .bg-stars{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+  }
+  .bg-stars span{
+    position:absolute;
+    color:var(--ink-soft);
+    opacity:0;
+    animation:twinkle 5s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%, 100%{opacity:0;transform:scale(0.8) translateY(0);}
+    50%{opacity:0.55;transform:scale(1.05) translateY(-4px);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bg-stars span{animation:none;opacity:0.25;}
+  }
+
   /* ===== 상단: 제목 + 카테고리 (고정) ===== */
   header{
+    position:relative;
+    z-index:1;
     flex-shrink:0;
     text-align:center;
     padding:2.4rem 1.5rem 1.4rem;
     border-bottom:1px solid var(--line);
+    background:var(--bg);
   }
-  header .eyebrow-mark{font-size:1.3rem;opacity:0.6;margin-bottom:0.3rem;}
+  /* 인트로 페이드인 */
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes fadeUpSoft{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:0.6;transform:translateY(0);}
+  }
+  header .eyebrow-mark{
+    opacity:0;
+    animation:fadeUpSoft 0.9s ease forwards;
+    animation-delay:0.1s;
+  }
+  header h1,
+  header .cat-bar{
+    opacity:0;
+    animation:fadeUp 0.9s ease forwards;
+  }
+  header h1{animation-delay:0.3s;}
+  header .cat-bar{animation-delay:0.55s;}
+  @media (prefers-reduced-motion:reduce){
+    header .eyebrow-mark{animation:none;opacity:0.6;}
+    header h1, header .cat-bar{animation:none;opacity:1;}
+  }
+
+  header .eyebrow-mark{font-size:1.3rem;margin-bottom:0.3rem;}
   header h1{
     font-size:clamp(1.7rem, 4vw, 2.3rem);
     font-weight:600;
@@ -93,6 +144,7 @@
     flex:1;
     min-height:0;
     position:relative;
+    z-index:1;
   }
   .tab{
     position:absolute;
@@ -230,6 +282,19 @@
   .human .tab-btn.active{background:var(--human);border-color:var(--human);color:#fff;}
   .divine .tab-btn.active{background:var(--divine);border-color:var(--divine);color:#fff;}
 
+  /* 세계관 설정 탭: 인간계/환계 섹션 구분 */
+  .setting-block{margin-bottom:2.4rem;}
+  .setting-block:last-child{margin-bottom:0;}
+  .setting-block-title{
+    font-size:1.05rem;
+    font-weight:600;
+    margin:0 0 0.9rem;
+    padding-bottom:0.5rem;
+    border-bottom:1px solid var(--line);
+  }
+  .setting-block-title.human{color:#9c5436;}
+  .setting-block-title.divine{color:#466857;}
+
   /* 서브 패널: 탭 전환이 아니라 아코디언처럼 쭉 펼쳐지는 형태 */
   .sub-panel{
     font-size:0.9rem;color:var(--ink-soft);
@@ -264,17 +329,51 @@
 </head>
 <body>
 
+<div class="bg-stars" aria-hidden="true">
+  <span style="left:12%; top:18%; font-size:0.9rem; animation-delay:0.2s;">✦</span>
+  <span style="left:78%; top:14%; font-size:0.7rem; animation-delay:1.4s;">✧</span>
+  <span style="left:88%; top:30%; font-size:0.8rem; animation-delay:2.6s;">✦</span>
+  <span style="left:25%; top:68%; font-size:0.7rem; animation-delay:0.8s;">✧</span>
+  <span style="left:6%; top:75%; font-size:0.85rem; animation-delay:3.2s;">✦</span>
+  <span style="left:55%; top:8%; font-size:0.65rem; animation-delay:1.9s;">✧</span>
+  <span style="left:92%; top:65%; font-size:0.75rem; animation-delay:0.4s;">✦</span>
+  <span style="left:40%; top:85%; font-size:0.7rem; animation-delay:2.2s;">✧</span>
+</div>
+
 <header>
   <div class="eyebrow-mark">✦</div>
   <h1 class="display">명환</h1>
   <div class="cat-bar">
-    <button class="cat-btn active" data-tab="worlds">세계관 설정</button>
+    <button class="cat-btn active" data-tab="setting">세계관 설정</button>
+    <button class="cat-btn" data-tab="worlds">구역 지도</button>
     <button class="cat-btn" data-tab="lineage">마법사 계보</button>
   </div>
 </header>
 
 <main>
-  <div class="tab active" id="tab-worlds">
+  <div class="tab active" id="tab-setting">
+    <div class="tab-inner">
+      <div class="section-head"><p>두 세계를 잇는 약속과 규칙</p></div>
+
+      <div class="setting-block">
+        <h3 class="setting-block-title human serif">인간계</h3>
+        <div class="sub-panel">
+          <h4>— 미정 —</h4>
+          <p>아직 정해지지 않은 설정입니다. 추후 채워질 예정이에요.</p>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <h3 class="setting-block-title divine serif">환계</h3>
+        <div class="sub-panel">
+          <h4>인간계로 내려가는 법</h4>
+          <p>환계의 존재는 원칙적으로 인간계로 내려갈 수 없다. 반드시 마법사가 인간의 형상을 만들어주어야만 왕래가 가능한데, 이는 대부분의 환계 존재가 본래 인간의 모습을 하고 있지 않기 때문이다. 다만 모두가 이 절차를 따르는 것은 아니어서, 간혹 마법사 몰래 마법 약을 훔쳐 인간 세상으로 내려가는 존재들도 있다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab" id="tab-worlds">
     <div class="tab-inner">
       <div class="section-head"><p>어느 쪽을 먼저 들여다볼까</p></div>
 
@@ -333,11 +432,6 @@
               <p class="panel-desc">여러 구역으로 나뉜 또 하나의 세계. 그 중심에는 대대로 이어지는 마법사가 있다.</p>
 
               <div class="sub-panel">
-                <h4>인간계로 내려가는 법</h4>
-                <p>환계의 존재는 원칙적으로 인간계로 내려갈 수 없다. 반드시 마법사가 인간의 형상을 만들어주어야만 왕래가 가능한데, 이는 대부분의 환계 존재가 본래 인간의 모습을 하고 있지 않기 때문이다. 다만 모두가 이 절차를 따르는 것은 아니어서, 간혹 마법사 몰래 마법 약을 훔쳐 인간 세상으로 내려가는 존재들도 있다.</p>
-              </div>
-
-              <div class="sub-panel">
                 <h4>구역 1</h4>
                 <p>아직 정해지지 않은 구역입니다. 추후 설정이 채워질 예정이에요.</p>
               </div>
@@ -360,18 +454,33 @@
     <div class="tab-inner">
       <div class="section-head"><p>환계의 중심은 늘 하나의 자리로 이어진다</p></div>
       <div class="timeline">
-        <div class="t-item placeholder">
+        <div class="t-item">
           <div class="t-gen">1대</div>
-          <h4>— 미정 —</h4>
-          <p>환계 최초의 마법사. 설정 예정.</p>
+          <h4>이름 불명 — 전설의 마법사</h4>
+          <p>환계가 처음 생겨났을 때부터 존재했다고 전해지는, 이름조차 남지 않은 마법사. 환계를 처음 만든 이이자 첫 지배자나 다름없었다는 설도 있다. 환계 역사상 가장 강력했으나, 동시에 가장 다정했던 존재로 전설처럼 내려온다.</p>
         </div>
         <div class="t-item placeholder">
-          <div class="t-gen">…</div>
+          <div class="t-gen">2대</div>
           <h4>— 미정 —</h4>
-          <p>계보 중간 세대. 설정 예정.</p>
+          <p>설정 예정.</p>
         </div>
         <div class="t-item placeholder">
-          <div class="t-gen">현재</div>
+          <div class="t-gen">3대</div>
+          <h4>— 미정 —</h4>
+          <p>설정 예정.</p>
+        </div>
+        <div class="t-item placeholder">
+          <div class="t-gen">4대</div>
+          <h4>— 미정 —</h4>
+          <p>설정 예정.</p>
+        </div>
+        <div class="t-item placeholder">
+          <div class="t-gen">5대</div>
+          <h4>— 미정 —</h4>
+          <p>설정 예정.</p>
+        </div>
+        <div class="t-item placeholder">
+          <div class="t-gen">6대 · 현재</div>
           <h4>— 미정 —</h4>
           <p>현 마법사. 제자를 두어 다음 대를 준비한다.</p>
         </div>
