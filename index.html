@@ -21,7 +21,11 @@
   }
   *{box-sizing:border-box;}
   body{word-break:keep-all;overflow-wrap:break-word;}
-  html,body{height:100%;}
+  html{height:100%;}
+  body{height:100vh;}
+  @supports (height: 100svh){
+    body{height:100svh;}
+  }
   body{
     margin:0;
     background:var(--bg);
@@ -155,7 +159,9 @@
     opacity:0;
     pointer-events:none;
     transition:opacity .3s ease;
-    overflow-y:auto;
+    overflow-y:scroll;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-y;
   }
   .tab.active{opacity:1;pointer-events:auto;}
   .tab-inner{
@@ -543,10 +549,14 @@
   }
   .char-tmi p:last-child{margin-bottom:0;}
 
-  #tab-characters{position:relative;min-height:100%;}
+  #tab-characters{position:relative;}
 
   @media (max-width:720px){
-    .char-grid{grid-template-columns:1fr 1fr;}
+    .char-grid{grid-template-columns:1fr 1fr 1fr;gap:0.6rem;}
+    .char-thumb{aspect-ratio:1/1;margin-bottom:0.5rem;}
+    .char-card{padding:0.7rem 0.7rem 0.9rem;}
+    .char-card h4{font-size:0.92rem;}
+    .char-oneline{font-size:0.74rem;}
   }
 
   /* 세계관 설정 탭: 인간계/환계 섹션 구분 */
